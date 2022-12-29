@@ -71,7 +71,6 @@ const App = () => {
         setHeartChart(o2);
         setOChart(heart);
         setTimeChart(time);
-        console.log('tuddd', temp);
 
         setCurrentTemp(data.temperature);
         setCurrentO(data.spo2);
@@ -98,7 +97,7 @@ const App = () => {
               width={'90%'}
               backgroundColor={'#EEF0F4'}
               completedColor={'orange'}
-              percentage={'20%'}
+              percentage={`${currentTemp ? +currentTemp : 0}%`}
               styleProps={{marginStart: 35 / 2}}
             />
             <Text
@@ -109,9 +108,10 @@ const App = () => {
                   fontSize: 30,
                   color: 'orange',
                   fontWeight: 'bold',
+                  marginBottom: 20
                 },
               ]}>
-              {currentTemp}
+              {currentTemp} độ C
             </Text>
           </View>
           <View style={styles.cardView}>
@@ -143,7 +143,7 @@ const App = () => {
             <AnimatedGaugeProgress
               size={165}
               width={20}
-              fill={90}
+              fill={currentO ? +currentO : 0}
               cropDegree={100}
               tintColor="#4682b4"
               backgroundColor="#b0c4de"
@@ -221,8 +221,9 @@ const GrandChart = ({dataArray, timeArray, domain, title}: any) => {
       />
       <VictoryAxis
         style={{
-          tickLabels: {fontSize: 0},
+          tickLabels: {fontSize: 0, color: 'white'},
         }}
+        tickFormat={() => ''}
       />
     </VictoryChart>
   );
