@@ -45,6 +45,10 @@ const CustomHeader = () => {
   );
 };
 
+function isNumeric(num: string) {
+  return !isNaN(+num);
+}
+
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentTemp, setCurrentTemp] = useState();
@@ -60,21 +64,30 @@ const App = () => {
       .ref('/UsersData/XsfbJBHmFIZa22GrBsOkJkK6BBa2')
       .limitToLast(5)
       .on('value', snapshot => {
-        const data = snapshot.val().current;
-        const listData = Object.values(snapshot.val().reading);
-        const temp: Array<any> = listData.map((x: any) => x.temperature);
-        const o2 = listData.map((x: any) => x.spo2);
-        const heart = listData.map((x: any) => x.heartRate);
-        const time = listData.map((x: any) => x.timestamp);
+        if (snapshot.val()?.current != null && snapshot.val()?.reading != null) {
+          const data = snapshot.val().current;
+          const listData = Object.values(snapshot.val().reading).filter(
+            item =>
+              isNumeric(item.heartRate) &&
+              isNumeric(item.temperature) &&
+              isNumeric(item.spo2),
+          );
+          console.log('tung', listData);
 
-        setTempChart(temp);
-        setHeartChart(o2);
-        setOChart(heart);
-        setTimeChart(time);
+          const temp: Array<any> = listData.map((x: any) => x.temperature);
+          const o2 = listData.map((x: any) => x.spo2);
+          const heart = listData.map((x: any) => x.heartRate);
+          const time = listData.map((x: any) => x.timestamp);
 
-        setCurrentTemp(data.temperature);
-        setCurrentO(data.spo2);
-        setCurrentHeart(data.heartRate);
+          setTempChart(temp);
+          setHeartChart(heart);
+          setOChart(o2);
+          setTimeChart(time);
+
+          setCurrentTemp(data.temperature);
+          setCurrentO(data.spo2);
+          setCurrentHeart(data.heartRate);
+        }
       });
   }, []);
 
@@ -108,7 +121,7 @@ const App = () => {
                   fontSize: 30,
                   color: 'orange',
                   fontWeight: 'bold',
-                  marginBottom: 20
+                  marginBottom: 20,
                 },
               ]}>
               {currentTemp} độ C
@@ -222,6 +235,8 @@ const GrandChart = ({dataArray, timeArray, domain, title}: any) => {
       <VictoryAxis
         style={{
           tickLabels: {fontSize: 0, color: 'white'},
+          grid: {stroke: 'transparent'},
+          ticks: {stroke: 'none'},
         }}
         tickFormat={() => ''}
       />
