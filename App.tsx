@@ -46,6 +46,7 @@ const CustomHeader = () => {
 };
 
 function isNumeric(num: string) {
+  if (num == "") return false;
   return !isNaN(+num);
 }
 
@@ -64,7 +65,10 @@ const App = () => {
       .ref('/UsersData/XsfbJBHmFIZa22GrBsOkJkK6BBa2')
       .limitToLast(5)
       .on('value', snapshot => {
-        if (snapshot.val()?.current != null && snapshot.val()?.reading != null) {
+        if (
+          snapshot.val()?.current != null &&
+          snapshot.val()?.reading != null
+        ) {
           const data = snapshot.val().current;
           const listData = Object.values(snapshot.val().reading).filter(
             item =>
@@ -83,10 +87,15 @@ const App = () => {
           setHeartChart(heart);
           setOChart(o2);
           setTimeChart(time);
-
-          setCurrentTemp(data.temperature);
-          setCurrentO(data.spo2);
-          setCurrentHeart(data.heartRate);
+          if (
+            isNumeric(data.heartRate) &&
+            isNumeric(data.temperature) &&
+            isNumeric(data.spo2)
+          ) {
+            setCurrentTemp(data.temperature);
+            setCurrentO(data.spo2);
+            setCurrentHeart(data.heartRate);
+          }
         }
       });
   }, []);
